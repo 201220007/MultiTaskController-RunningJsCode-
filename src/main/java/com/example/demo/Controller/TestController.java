@@ -96,12 +96,111 @@ public class TestController {
         }
         return "{"+"\"content\""+":"+list.toString()+"}";
     }
-
+    @GetMapping(value = "/filterTaskForAdmin")
+    public @ResponseBody String filterTaskForAdmin(@RequestBody Query query){
+        //judge whether the input of date is legal
+        if((query.endTime==-1&&query.startTime!=-1)||query.endTime!=-1&&query.startTime==-1){
+            return "{\"state\":\"error\"}";
+        }else if (query.endTime > query.startTime){
+            return "{\"state\":\"error\"}";
+        }
+        //convert date to milliseconds(stored in temp[0],temp[1])
+        List<Long> temp=new ArrayList<>();
+        if(query.startTime!=-1&&query.endTime!=-1) {
+            temp = commonService.timeConvert(query.startTime, query.endTime);
+        }
+        //judge whether there are parameters.
+        //The initial value of taskName is "" and others are -1
+        //If the String is "" or Long is -1.Convert it to null.
+        Long s1=null,s2=null;
+        if(query.startTime==-1&&query.endTime==-1){
+            s1=null;
+            s2=null;
+        }else{
+            s1= temp.get(0);
+            s2=temp.get(1);
+        }
+        Long id=null;
+        if(query.taskId==-1) {
+            id=null;
+        }else{
+            id= query.taskId;
+        }
+        String name=null;
+        if(Objects.equals(query.taskName, "")){
+            name=null;
+        }else{
+            name=query.taskName;
+        }
+        //now we have the final result:name,id,s1,s2
+        List<Task> list=taskRepository.findWithConditions2(name,id,s1,s2);
+        if(Objects.equals(query.sortByStartTime, "ASC")){
+            Collections.sort(list,new TaskComparator());
+        }else if(Objects.equals(query.sortByStartTime, "DESC")){
+            Collections.sort(list,new TaskComparator());
+            Collections.reverse(list);
+        }
+        return "{"+"\"content\""+":"+list.toString()+"}";
+    }
     @GetMapping(value = "/SystemInfo")
     public @ResponseBody JSONObject getSysInfo() throws UnknownHostException {
         return OshiControl.getInfo();
     }
-
+    @GetMapping(value="/filterExecutionForAdmin")
+    public @ResponseBody String filterExecutionForAdmin(@RequestBody Query query){
+        if((query.endTime==-1&&query.startTime!=-1)||query.endTime!=-1&&query.startTime==-1){
+            return "{\"state\":\"error\"}";
+        }else if (query.endTime > query.startTime){
+            return "{\"state\":\"error\"}";
+        }
+        if(!Objects.equals(query.sortByRunningTime, "")&& !Objects.equals(query.sortByStartTime, "")){
+            return "{\"state\":\"error\"}";
+        }
+        List<Long> temp=new ArrayList<>();
+        if(query.startTime!=-1&&query.endTime!=-1) {
+            temp = commonService.timeConvert(query.startTime, query.endTime);
+        }
+        Long s1=null,s2=null;
+        if(query.startTime==-1&&query.endTime==-1){
+            s1=null;
+            s2=null;
+        }else{
+            s1= temp.get(0);
+            s2=temp.get(1);
+        }
+        Long id=null;
+        if(query.taskId==-1) {
+            id=null;
+        }else{
+            id= query.taskId;
+        }
+        String name=null;
+        if(Objects.equals(query.taskName, "")){
+            name=null;
+        }else{
+            name=query.taskName;
+        }
+        List<Execution> list=executionRepository.findWithDate2(name,id,s1,s2);
+        if(Objects.equals(query.sortByRunningTime, "ASC")){
+            Collections.sort(list,new ExecutionComparator());
+        }else if(Objects.equals(query.sortByRunningTime, "DESC")){
+            Collections.sort(list,new ExecutionComparator());
+            Collections.reverse(list);
+        }
+        if(Objects.equals(query.sortByStartTime, "ASC")){
+            Collections.sort(list,new ExecutionComparator2());
+        }else if(Objects.equals(query.sortByStartTime, "DESC")){
+            Collections.sort(list,new ExecutionComparator2());
+            Collections.reverse(list);
+        }
+        for(Execution e:list){
+            long taskId=e.getTaskId();
+            Task task=taskRepository.findById(taskId);
+            e.setTaskName(task.getTaskName());
+            executionRepository.save(e);
+        }
+        return "{"+"\"content\""+":"+list.toString()+"}";
+    }
     @GetMapping(value="/filterExecution")
     public @ResponseBody String filterExecution(@RequestBody Query query){
         if((query.endTime==-1&&query.startTime!=-1)||query.endTime!=-1&&query.startTime==-1){
@@ -149,12 +248,21 @@ public class TestController {
             Collections.sort(list,new ExecutionComparator2());
             Collections.reverse(list);
         }
+        for(Execution e:list){
+            long taskId=e.getTaskId();
+            Task task=taskRepository.findById(taskId);
+            e.setTaskName(task.getTaskName());
+            executionRepository.save(e);
+        }
         return "{"+"\"content\""+":"+list.toString()+"}";
     }
     @PostMapping(value="/deleteTask")
     public @ResponseBody String deleteTask(@RequestParam("taskId") long taskId){
         Task task=taskRepository.findById(taskId);
         if(task==null){
+            return "{\"status\":\"fail\"}";
+        }
+        if(!task.getFlag()){
             return "{\"status\":\"fail\"}";
         }
         task.setFlag(false);
@@ -253,6 +361,10 @@ public class TestController {
                 temp1=dics.get(executionId);
             }
         }
+        long taskId=temp1.getTaskId();
+        Task task=taskRepository.findById(taskId);
+        temp1.setTaskName(task.getTaskName());
+        dics.put(executionId,temp1);
         return temp1.toString();
     }
     public static String map2JSONStr(Map m) {

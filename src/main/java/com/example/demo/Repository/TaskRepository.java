@@ -13,9 +13,11 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task,String> {
     List<Task> findByTaskName(String task_name);
     Task findById(long taskId);
-    @Query(value="select t from Task t where (t.taskName=:#{#taskname} or :#{#taskname} is null) and (t.id=:#{#taskid} or :#{#taskid} is null) and (t.date>=:#{#starttime} or :#{#starttime} is null) and (t.date<=:#{#finishedtime} or :#{#finishedtime} is null)")
+    @Query(value="select t from Task t where (t.taskName=:#{#taskname} or :#{#taskname} is null) and (t.id=:#{#taskid} or :#{#taskid} is null) and (t.date>=:#{#starttime} or :#{#starttime} is null) and (t.date<=:#{#finishedtime} or :#{#finishedtime} is null) and (t.flag=true)")
     List<Task> findWithConditions(@Param("taskname") String taskname, @Param("taskid") Long taskid, @Param("starttime") Long starttime, @Param("finishedtime") Long finishedtime);
     @Transactional
     @Modifying
     Task deleteTaskById(long taskId);
+    @Query(value="select t from Task t where (t.taskName=:#{#taskname} or :#{#taskname} is null) and (t.id=:#{#taskid} or :#{#taskid} is null) and (t.date>=:#{#starttime} or :#{#starttime} is null) and (t.date<=:#{#finishedtime} or :#{#finishedtime} is null)")
+    List<Task> findWithConditions2(@Param("taskname") String taskname, @Param("taskid") Long taskid, @Param("starttime") Long starttime, @Param("finishedtime") Long finishedtime);
 }

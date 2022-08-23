@@ -16,7 +16,10 @@ public interface ExecutionRepository extends JpaRepository<Execution, Long> {
 
     /*@Query(value = "select e from Execution e where if(:taskname!=null,e.taskName=:taskname,1=1) and (e.id=:taskid or :taskid=0) and (e.startTime>=:starttime or :starttime=0) and (e.startTime<=:finishedtime or :finishedtime=0)")
     List<Execution> findWithDate(@Param("taskname") String taskname, @Param("taskid") Long taskid, @Param("starttime") Long s1, @Param("finishedtime") Long s2);*/
-    @Query(value = "select e from Execution e where (e.taskName=:#{#taskname} or :#{#taskname} is null) and (e.taskId=:#{#taskid} or :#{#taskid} is null) and (e.startTime>=:#{#starttime} or :#{#starttime} is null) and (e.startTime<=:#{#finishedtime} or :#{#finishedtime} is null)")//and (e.startTime>=:starttime or :starttime=0) and (e.startTime<=:finishedtime or :finishedtime=0)
+    @Query(value = "select e from Execution e,Task t where (e.taskName=:#{#taskname} or :#{#taskname} is null) and (e.taskId=:#{#taskid} or :#{#taskid} is null) and (e.startTime>=:#{#starttime} or :#{#starttime} is null) and (e.startTime<=:#{#finishedtime} or :#{#finishedtime} is null) and (e.taskId=t.id and t.flag=true)")//and (e.startTime>=:starttime or :starttime=0) and (e.startTime<=:finishedtime or :finishedtime=0)
     List<Execution> findWithDate(@Param("taskname") String taskname,@Param("taskid") Long taskid,@Param("starttime") Long starttime,@Param("finishedtime") Long finishedtime);
+
+    @Query(value = "select e from Execution e,Task t where (e.taskName=:#{#taskname} or :#{#taskname} is null) and (e.taskId=:#{#taskid} or :#{#taskid} is null) and (e.startTime>=:#{#starttime} or :#{#starttime} is null) and (e.startTime<=:#{#finishedtime} or :#{#finishedtime} is null)")//and (e.startTime>=:starttime or :starttime=0) and (e.startTime<=:finishedtime or :finishedtime=0)
+    List<Execution> findWithDate2(@Param("taskname") String taskname,@Param("taskid") Long taskid,@Param("starttime") Long starttime,@Param("finishedtime") Long finishedtime);
 
 }

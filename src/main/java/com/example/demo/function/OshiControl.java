@@ -104,7 +104,7 @@ public class OshiControl {
         JSONObject cpuInfo;
         JSONArray sysFiles = new JSONArray();
         FileSystem fileSystem = operatingSystem.getFileSystem();
-        OSFileStore[] fsArray = fileSystem.getFileStores();
+        OSFileStore[] fsArray = fileSystem.getFileStores().toArray(new OSFileStore[0]);
         for (OSFileStore fs : fsArray) {
             cpuInfo = new JSONObject();
             //盘符路径
