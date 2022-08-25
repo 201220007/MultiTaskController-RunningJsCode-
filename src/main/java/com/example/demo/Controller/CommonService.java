@@ -5,11 +5,18 @@ import com.example.demo.Repository.ExecutionRepository;
 import com.example.demo.Repository.TaskInProcessRepository;
 import com.example.demo.Repository.TaskRepository;
 import com.example.demo.bean.Execution;
+import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.script.ScriptException;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -26,6 +33,8 @@ public class CommonService {
     private ExecutionRepository executionRepository;
     @Autowired
     private TaskInProcessRepository taskInProcessRepository;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
     public String get_execution_to_cache(long executionId) throws InterruptedException, ScriptException {
         Execution temp=executionRepository.findById(executionId);
         if(temp==null) {
@@ -102,5 +111,32 @@ public class CommonService {
         }else{
             return false;
         }
+    }
+
+    public void batchInsert(List<Execution> list){
+        System.out.println(1);
+        String sql = "insert into executions(id,taskId,taskName,taskContent,startTime,runningTime,status,result,expectedTime,expectedMemory,parameter) values(?,?,?,?,?,?,?,?,?,?,?)";
+
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
+                preparedStatement.setLong(1, list.get(i).getId());
+                preparedStatement.setLong(2, list.get(i).getTaskId());
+                preparedStatement.setString(3, list.get(i).getTaskName());
+                preparedStatement.setString(4, list.get(i).getTaskContent());
+                preparedStatement.setLong(5, list.get(i).getStartTime());
+                preparedStatement.setLong(6, list.get(i).getRunningTime());
+                preparedStatement.setString(7, list.get(i).getStatus());
+                preparedStatement.setString(8, list.get(i).getResult());
+                preparedStatement.setLong(9, list.get(i).getExpectedTime());
+                preparedStatement.setLong(10, list.get(i).getExpectedMemory());
+                preparedStatement.setString(11, list.get(i).getParameter());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return list.size();
+            }
+        });
     }
 }

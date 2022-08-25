@@ -41,6 +41,21 @@ public class Execution {
         this.expectedMemory=expectedMemory;
         this.parameter=parameter;
     }
+
+    public Execution(long i,long i1,String i2,String i3,long i4,long i5,String i6,String i7,long i8,long i9,String i10) {
+        this.id=i;
+        this.taskId=i1;
+        this.taskContent=i2;
+        this.taskName=i3;
+        this.startTime=i4;
+        this.runningTime=i5;
+        this.status=i6;
+        this.result=i7;
+        this.expectedTime=i8;
+        this.expectedMemory=i9;
+        this.parameter=i10;
+    }
+
     public long getId(){return id;}
     public long getTaskId() {
         return taskId;
