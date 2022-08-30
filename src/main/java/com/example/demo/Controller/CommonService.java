@@ -98,7 +98,12 @@ public class CommonService {
         execution = executionRepository.save(execution);
         dics.put(execution.getId(),execution);
         String content=execution.getParameter()+execution.getTaskContent();
-        Future<String> future1 = asyncTaskService.exec2(execution.getId(),content,execution.getExpectedTime(),execution.getExpectedMemory());
+        Future<String> future1;
+        if(!execution.getIsUrgent()) {
+            future1 = asyncTaskService.exec2(execution.getId(), content, execution.getExpectedTime(), execution.getExpectedMemory());
+        }else{
+            future1 = asyncTaskService.exec3(execution.getId(), content, execution.getExpectedTime(), execution.getExpectedMemory());
+        }
         dics2.put(execution.getId(),future1);
         return execution.toString();
     }

@@ -346,8 +346,7 @@ public class TestController {
         }
         long s = System.currentTimeMillis();
         Task task=taskRepository.findById(execution.getTaskId());
-        if(task==null)
-        {
+        if(task==null) {
             return "{\"operation_status\":\"wrongTaskId\"}";
         } else {
             if(!task.getFlag()){

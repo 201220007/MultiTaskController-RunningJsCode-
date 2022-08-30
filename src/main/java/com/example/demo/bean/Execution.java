@@ -28,6 +28,9 @@ public class Execution {
     private Long expectedMemory=null;
     @Column(name = "Parameter")
     private String parameter=null;
+
+    @Column(name="IsUrgent")
+    private Boolean isUrgent=false;
     public Execution() {
     }
     public Execution(long taskId, String taskContent, long startTime,long runningTime,String status,String result,long expectedTime,long expectedMemory,String parameter) {
@@ -107,6 +110,9 @@ public class Execution {
     }
     public void setParameter(String parameter){ this.parameter=parameter; };
     public String getParameter(){ return parameter; };
+
+    public Boolean getIsUrgent(){ return isUrgent; }
+    public void setIsUrgent(Boolean isUrgent){ this.isUrgent=isUrgent; }
     @Override
     public String toString() {
         return "{\"executionId\":\""+id+"\",\"taskId\":\""+taskId+"\",\"taskName\":\""+taskName+"\",\"task_content\":\""+taskContent+"\",\"start_time\":"+startTime+",\"running_time\":"+runningTime+",\"status\":\""+status+"\",\"result\":\""+result+"\",\"parameter\":\""+parameter+"\"}";

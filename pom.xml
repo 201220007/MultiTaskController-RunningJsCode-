@@ -79,6 +79,11 @@
             <!-- 必须添加JDK版本号-->
             <classifier>jdk15</classifier>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
 
         <dependency>
             <groupId>commons-beanutils</groupId>

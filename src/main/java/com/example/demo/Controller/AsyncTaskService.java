@@ -8,6 +8,7 @@ import com.example.demo.bean.tasks_operation;
 import delight.nashornsandbox.NashornSandbox;
 import delight.nashornsandbox.NashornSandboxes;
 import delight.nashornsandbox.exceptions.ScriptCPUAbuseException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -19,6 +20,7 @@ import java.util.concurrent.*;
 
 import static com.example.demo.Controller.TestController.*;
 
+@Slf4j
 @Service
 public class AsyncTaskService {
     static tasks_operation operate=new tasks_operation();
@@ -27,7 +29,7 @@ public class AsyncTaskService {
     @Autowired
     private ExecutionRepository executionRepository;
 
-    @Async("taskExecutor")
+    @Async(value="primaryExecutor")
     public void save_execution_to_disk() throws InterruptedException {
         int k=0;
         Random r=new Random();
@@ -55,7 +57,7 @@ public class AsyncTaskService {
             }
         }
     }
-    @Async("taskExecutor")
+    @Async(value="primaryExecutor")
     public void save_task_to_disk() throws InterruptedException {
         int k=0;
         Random r=new Random();
@@ -82,8 +84,9 @@ public class AsyncTaskService {
             }
         }
     }
-    @Async("taskExecutor")
+    @Async(value="primaryExecutor")
     public Future<String> exec2(Long executionId,String program,long expectedTime,long expectedMemory) throws InterruptedException, ScriptException {
+        System.out.println(Thread.currentThread().getName());
         NashornSandbox sandbox = NashornSandboxes.create();
         sandbox.setMaxCPUTime(expectedTime);// 设置脚本执行允许的最大CPU时间（以毫秒为单位），超过则会报异常,防止死循环脚本
         sandbox.setMaxMemory(expectedMemory); //设置JS执行程序线程可以分配的最大内存（以字节为单位），超过会报ScriptMemoryAbuseException错误
@@ -108,8 +111,9 @@ public class AsyncTaskService {
         executionRepository.save(dics.get(executionId)); //当execution状态发生改变的时候，立马更新到数据库里
         return new AsyncResult<String>(result);
     }
-    @Async("taskExecutor2")
+    @Async(value="secondaryExecutor")
     public Future<String> exec3(Long executionId,String program,long expectedTime,long expectedMemory) throws InterruptedException, ScriptException {
+        System.out.println(Thread.currentThread().getName());
         NashornSandbox sandbox = NashornSandboxes.create();
         sandbox.setMaxCPUTime(expectedTime);// 设置脚本执行允许的最大CPU时间（以毫秒为单位），超过则会报异常,防止死循环脚本
         sandbox.setMaxMemory(expectedMemory); //设置JS执行程序线程可以分配的最大内存（以字节为单位），超过会报ScriptMemoryAbuseException错误

@@ -17,7 +17,6 @@ public class Task {
 
     @Column(name="Flag")
     private Boolean flag=true;
-
     public Task() {
     }
     public Task(String taskName, String taskContent) {
