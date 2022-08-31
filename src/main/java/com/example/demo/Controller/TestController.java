@@ -33,7 +33,9 @@ public class TestController {
 
     public static long querySize=3;
 
-    public static long cacheSize=5;
+    public static long CacheSize=5;
+
+    public static long TaskCacheSize=5;
 
     public static int deleteParameter;
 
@@ -66,9 +68,15 @@ public class TestController {
         querySize=querysize;
         return "{\"state\":\"success\"}";
     }
-    @RequestMapping(value="/setCacheSize/{cacheSize}")
-    public @ResponseBody String setCacheSize(@PathVariable("cacheSize") Long cachesize){
-        cacheSize=cachesize;
+    @RequestMapping(value="/setExecutionCacheSize/{cacheSize}")
+    public @ResponseBody String setCacheSize(@PathVariable("cacheSize") Long cacheSize){
+        CacheSize=cacheSize;
+        return "{\"state\":\"success\"}";
+    }
+
+    @RequestMapping(value="/setTaskCacheSize/{taskCacheSize}")
+    public @ResponseBody String setCacheSize2(@PathVariable("taskCacheSize") Long taskCacheSize){
+        TaskCacheSize=taskCacheSize;
         return "{\"state\":\"success\"}";
     }
     @GetMapping(value = "/filterTask")

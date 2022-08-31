@@ -41,7 +41,7 @@ public class AsyncTaskService {
             System.out.println(k + " round_execution");
             System.out.println(dics.size());
             int start = 1;
-            if (dics.size() > cacheSize) {
+            if (dics.size() > CacheSize) {
                 int i = r.nextInt(deleteParameter) + 1;//生成1—3之间的随机数
                 for (Map.Entry<Long, Execution> entry : dics.entrySet()) {
                     if ((start == i) && Objects.equals(entry.getValue().getStatus(), "finished") || Objects.equals(entry.getValue().getStatus(), "JS_error") || Objects.equals(entry.getValue().getStatus(), "time_exceeded") || Objects.equals(entry.getValue().getStatus(), "killed")) {
@@ -69,7 +69,7 @@ public class AsyncTaskService {
             System.out.println(k + " round_task");
             System.out.println(dics3.size());
             int start = 1;
-            if (dics3.size() > cacheSize) {
+            if (dics3.size() > TaskCacheSize) {
                 int i = r.nextInt(deleteParameter) + 1;//生成1—3之间的随机数
                 for (Map.Entry<Long, Task> entry : dics3.entrySet()) {
                     if ((start == i)||!entry.getValue().getFlag()) {

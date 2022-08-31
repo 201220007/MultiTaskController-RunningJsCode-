@@ -23,9 +23,9 @@ public class Execution {
     @Column(name = "Result")
     private String result=null;
     @Column(name = "ExpectedTime")
-    private Long expectedTime=null;
+    private Long expectedTime= 6000L;
     @Column(name = "ExpectedMemory")
-    private Long expectedMemory=null;
+    private Long expectedMemory= 1024L;
     @Column(name = "Parameter")
     private String parameter=null;
 
